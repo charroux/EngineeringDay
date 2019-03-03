@@ -49,7 +49,7 @@ public class EngineeringDayController {
 	public void numberFormatException() {
 	}
 	
-	@ResponseStatus(value=HttpStatus.PRECONDITION_FAILED, reason="Crière erroné.")  
+	@ResponseStatus(value=HttpStatus.PRECONDITION_FAILED, reason="Critère erroné.")  
 	@ExceptionHandler(BadCritetionException.class)
 	public void conflict() {
 			// Nothing to do
@@ -213,7 +213,9 @@ public class EngineeringDayController {
 			throw new NumberFormatException("Le numéro d'équipe doit être > 0.");
 		}
 		
-		if(criteria==null || criteria.size()==0) {
+		List<Criterion> assessmentTable = this.getTeamAssessmentTable();
+		
+		if(criteria==null || criteria.size()!=assessmentTable.size()) {
 			throw new BadCritetionException();
 		}
 		
@@ -228,8 +230,6 @@ public class EngineeringDayController {
 		Entity teamAssessment = new Entity("teamAssessment");
 		
 		teamAssessment.setProperty("teamNumber", teamNumber);
-		
-		List<Criterion> assessmentTable = this.getTeamAssessmentTable();
 		
 		int i=0;
 		for(CriterionValues values: criteria) {

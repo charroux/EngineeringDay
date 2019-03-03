@@ -12,32 +12,49 @@ Vue.component('assessment', {
 			 assessmentTable : [],
 			 assess : [],
 			 saveValidation : false,
-			 teamReady : false
+			 teamReady : false,
+			 erreur : false,
+			 erreurMessage : ""
 		 }
 	  },
 		methods: {
 			onTeamNumber: function (event) {
 				axios
 					.get('https://engineeringday.appspot.com/assessmentTable')
-					.then(response => (this.assessmentTable = response.data))					
-				this.saveValidation = false
-				this.teamReady = true
+					.then(response => {
+						this.assessmentTable = response.data
+						this.saveValidation = false
+						this.teamReady = true
+					})
+					.catch(error => {						
+	  					this.erreur = true;
+	  					this.erreurMessage = error.response.statusText
+					});
 			 },
 	  		onSaveAssessment: function (event) {
 	  			axios.put('https://engineeringday.appspot.com/teamAssessment/' + this.teamNumber , this.assess)
-	  			.catch(function (error) {
-	  				console.log(error);
-	  			})
+	  			.catch(error => {
+	  				this.erreur = true;
+	  				this.erreurMessage = error.response.statusText
+	  			});
 	  			this.saveValidation = true
 	  			this.teamReady = false
 	  		},
 	  		onCancelAssessment: function (event) {
 		  		this.saveValidation = false
 		  		this.teamReady = false
+		  	},
+		  	onErrorClosed: function (event) {
+		  		this.erreur = false
 		  	}			 
 		},
-	template: `
+	template: 		`
 	<div>
+	
+		<div>
+			<button v-if="erreur" type="button" class="btn btn-danger" v-on:click="onErrorClosed">Erreur : {{erreurMessage}}</button>
+		</div>	
+	
 		<form>
 		<div class="row">
 			<div class="col">Choisir un numéro d'équipe : </div>
@@ -46,7 +63,7 @@ Vue.component('assessment', {
 				<button v-if="teamReady == false" type="button" class="btn btn-info" v-on:click="onTeamNumber">Sélectionner l'équipe {{teamNumber}}</button>
 				<label v-if="teamReady">Equipe {{teamNumber}} prête à la saisie</label>
 			</div>
-		</div>
+		</div>	
 		</form>
 
 		<table class="table table-sm">
