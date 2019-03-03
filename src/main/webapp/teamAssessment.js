@@ -18,13 +18,13 @@ Vue.component('assessment', {
 		methods: {
 			onTeamNumber: function (event) {
 				axios
-					.get('http://localhost:8080/assessmentTable')
+					.get('https://engineeringday.appspot.com/assessmentTable')
 					.then(response => (this.assessmentTable = response.data))					
 				this.saveValidation = false
 				this.teamReady = true
 			 },
 	  		onSaveAssessment: function (event) {
-	  			axios.put('http://localhost:8080/teamAssessment/' + this.teamNumber , this.assess)
+	  			axios.put('https://engineeringday.appspot.com/teamAssessment/' + this.teamNumber , this.assess)
 	  			.catch(function (error) {
 	  				console.log(error);
 	  			})
@@ -48,14 +48,14 @@ Vue.component('assessment', {
 			</div>
 		</div>
 		</form>
-		
+
 		<table class="table table-sm">
 		<tbody>
 						
-			<tr v-for="(assessment, index) in assessmentTable">
+			<tr class="table-active" v-for="(assessment, index) in assessmentTable">
 			<td><b>{{assessment.criterion}}</b></td>
 	       	<td v-for="values in assessment.criterionValues">
-	       		<input type="radio" v-model="assess[index]">
+	       		<input type="radio" :value="values" v-model="assess[index]">
 	       		{{values.name}}
 	       	</td>
 			</tr>
